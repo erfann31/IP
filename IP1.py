@@ -1,36 +1,48 @@
 import cv2
 import numpy as np
-
-
-def sobel_filter(img):
-    # Convert image to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Apply Sobel filter in x direction
-    sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-
-    # Apply Sobel filter in y direction
-    sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-
-    # Calculate the norm of the two Sobel-filtered images
-    sobel_norm = np.sqrt(np.square(sobel_x) + np.square(sobel_y))
-
-    # Normalize the image
-    sobel_norm = cv2.normalize(sobel_norm, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-
-    # Return the Sobel filtered images
-    return sobel_x, sobel_y, sobel_norm
-
+from matplotlib import pyplot as plt
 
 # Load the image
-img = cv2.imread('lena.jpg')
+img = cv2.imread('8.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Apply the Sobel filter
-sobel_x, sobel_y, sobel_norm = sobel_filter(img)
 
-# Display the results
-cv2.imshow('Sobel X', sobel_x)
-cv2.imshow('Sobel Y', sobel_y)
-cv2.imshow('Sobel Norm', sobel_norm)
+# Define the Sobel matrix for x and y directions
+MX = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+MY = MX.transpose()
+
+# Apply Sobel filter to the grayscale image in both x and y directions
+sobelX = cv2.filter2D(gray, -1, MX)
+sobelY = cv2.filter2D(gray, -1, MY)
+
+
+# Convert Sobel filtered images to float64 data type for further processing
+sobelX = np.float64(sobelX)
+sobelY = np.float64(sobelY)
+
+# Calculate the magnitude of the gradient using the Sobel filtered images
+mag = np.sqrt(sobelX ** 2 + sobelY ** 2)
+
+# Normalize the magnitude to a range between 0 and 255
+mag = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+
+# Display the Sobel filtered images after conversion and the normalized magnitude
+fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+
+axs[0, 0].imshow(gray, cmap='gray')
+axs[0, 0].set_title("Original")
+
+axs[0, 1].imshow(sobelX, cmap='gray')
+axs[0, 1].set_title("Sobel X")
+
+axs[1, 0].imshow(sobelY, cmap='gray')
+axs[1, 0].set_title("Sobel Y")
+
+axs[1, 1].imshow(mag, cmap='gray')
+axs[1, 1].set_title("Sobel Magnitude")
+
+plt.show()
+
+# Wait indefinitely until a key is pressed and then close all windows
 cv2.waitKey(0)
 cv2.destroyAllWindows()
