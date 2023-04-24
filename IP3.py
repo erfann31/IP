@@ -24,7 +24,7 @@ ze[crow - bw2:crow + bw2, ccol - bw2:ccol + bw2] = 0
 f1 = f * ze
 
 absf = np.abs(f1)
-logabs = 200 * np.log(absf + 1e-8)
+logabs = 200 * np.log(absf)
 plt.subplot(224)
 plt.imshow(logabs, cmap='gray')
 
@@ -35,6 +35,6 @@ image = np.abs(imrecover)
 plt.subplot(223)
 plt.imshow(image, cmap='gray')
 image = image.astype(np.uint8)
-cv2.imshow('res',image)
+cv2.imshow('res', image)
 plt.show()
 cv2.waitKey(0)
